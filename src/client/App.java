@@ -5,7 +5,7 @@ import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-import server.Tridy;
+import shared.Tridy;
 import shared.Skupina;
 import shared.Trida;
 
@@ -17,14 +17,13 @@ public class App {
             for (Trida trida : tridy.getTridy()) {
                 System.out.println(trida.getOznaceni());
             }
-
-            Trida t = new Trida().setOznaceni("4.E").setSkupina(new Skupina("C")).setSkupina(new Skupina("S1"))
+ 
+            Trida t = new Trida().setOznaceni("4.E").setSkupina(new Skupina("K")).setSkupina(new Skupina("S1"))
                     .setSkupina(new Skupina("S2")).setSkupina(new Skupina("MS2")).setSkupina(new Skupina("MS2"));
             if (tridy.writeTrida(t))
                 System.out.println("Zápis ok");
             else
                 System.out.println("Zápis not ok");
-
         } catch (MalformedURLException | RemoteException | NotBoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

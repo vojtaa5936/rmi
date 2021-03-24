@@ -35,12 +35,14 @@ public class Tridy extends UnicastRemoteObject implements shared.Tridy {
                 PreparedStatement skupinyStmt = conn
                         .prepareStatement("SELECT id, oznaceni FROM skupiny WHERE trida = ?");) {
             while (tridyRs.next()) {
-                Trida trida = new Trida().setId(tridyRs.getInt("id")).setOznaceni("oznaceni");
-
+                System.out.println(tridyRs.getInt("id"));               
+                Trida trida = new Trida().setId(tridyRs.getInt("id")).setOznaceni(tridyRs.getString("oznaceni"));
+                System.out.println(trida.getOznaceni());
                 skupinyStmt.setInt(1, trida.getId());
                 try (ResultSet skupinyRs = skupinyStmt.executeQuery()){
                     while (skupinyRs.next()) {
                         trida.setSkupina(new Skupina(skupinyRs.getString("oznaceni")).setId(skupinyRs.getInt("id")));
+                        System.out.println(skupinyRs.getString("oznaceni"));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -72,8 +74,10 @@ public class Tridy extends UnicastRemoteObject implements shared.Tridy {
             // generovanych klicu
             try (java.sql.PreparedStatement stmt = conn.prepareStatement(
                     "INSERT INTO tridy (rocnik, oznaceni) values (?, ?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
-                stmt.setString(1, trida.getOznaceni().substring(0, 1));
+                stmt.setInt(1, Integer.parseInt(trida.getOznaceni().substring(0,1)));
                 stmt.setString(2, trida.getOznaceni().substring(2));
+                System.out.println(trida.getOznaceni().substring(0, 1));
+                System.out.println(trida.getOznaceni().substring(2));
                 if (stmt.executeUpdate() != 1) {
                     throw new Exception("Nepodaril se zapis tridy");
                 }
@@ -81,8 +85,11 @@ public class Tridy extends UnicastRemoteObject implements shared.Tridy {
                 ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
                     trida.setId(rs.getInt(1)); // ziskani vygenerovaneho id
+                    System.out.println("ziskane id: " + trida.getId());
                 }
+                rs.close();
             } catch (Exception e) {
+                e.printStackTrace();
                 conn.rollback();
                 throw e;
             }
@@ -92,6 +99,7 @@ public class Tridy extends UnicastRemoteObject implements shared.Tridy {
                 for (Iterator<Skupina> it = trida.skupiny(); it.hasNext();) {
                     Skupina sk = it.next();
 
+                    System.out.println("id tridy"+trida.getId());
                     stmt.setInt(1, trida.getId());
                     System.out.println(sk.getOznaceni());
                     stmt.setString(2, sk.getOznaceni());
@@ -104,6 +112,7 @@ public class Tridy extends UnicastRemoteObject implements shared.Tridy {
                     }
                 }
             } catch (SQLException e) {
+                e.printStackTrace();
                 conn.rollback(); // zamutnuti trannsakce, odvolani zmen
                 throw e;
             }

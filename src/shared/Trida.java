@@ -24,10 +24,16 @@ public class Trida extends Polozka{
         return this;
     }
 
-    @Override
+ /*    @Override
     public Trida setId(int id) {   
         return (Trida)super.setId(id);
+    } */
+
+    public Trida setId(int id) {
+        this.id = id;
+        return this;
     }
+
 
     public int getId() {
         return id;
